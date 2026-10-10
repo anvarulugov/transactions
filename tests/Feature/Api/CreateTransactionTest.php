@@ -502,6 +502,11 @@ it('records a created revision holding the full snapshot', function () {
             'department_id' => $department->id,
             'dimension_values' => [$branch->id => $value->id],
             'deleted_at' => null,
+            'is_market_purchase' => false,
+            'receipt_id' => null,
+            'quantity_kg' => null,
+            'quantity' => null,
+            'quantity_unit' => null,
         ]);
 });
 

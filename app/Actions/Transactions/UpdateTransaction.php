@@ -6,6 +6,7 @@ use App\Enums\RevisionAction;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Support\Money;
+use App\Support\Quantity;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -17,7 +18,7 @@ class UpdateTransaction
      * absent: who a transaction belongs to, and the department snapshot taken from
      * them, are settled at creation and never re-decided by an editor.
      */
-    private const UPDATABLE = ['type', 'amount_minor', 'currency', 'occurred_on', 'category_id', 'note'];
+    private const UPDATABLE = ['type', 'amount_minor', 'currency', 'occurred_on', 'category_id', 'note', 'quantity_kg', 'quantity', 'quantity_unit', 'is_market_purchase'];
 
     public function __construct(private readonly RecordRevision $recordRevision) {}
 
@@ -28,6 +29,19 @@ class UpdateTransaction
     public function handle(Transaction $transaction, array $changes, ?array $dimensionValues, User $actor): Transaction
     {
         $this->assertAmountIsWritable($transaction, $changes);
+
+        if (array_key_exists('quantity_kg', $changes) && ! array_key_exists('quantity', $changes)) {
+            $changes['quantity'] = $changes['quantity_kg'];
+            $changes['quantity_unit'] = $changes['quantity_kg'] !== null ? 'kg' : null;
+        }
+
+        if (array_key_exists('quantity', $changes) || array_key_exists('quantity_unit', $changes)) {
+            $quantity = Quantity::normalize($changes['quantity'] ?? null);
+            $unit = Quantity::unit($quantity, $changes['quantity_unit'] ?? null);
+            $changes['quantity'] = $quantity;
+            $changes['quantity_unit'] = $unit;
+            $changes['quantity_kg'] = $unit === 'kg' ? $quantity : null;
+        }
 
         return DB::transaction(function () use ($transaction, $changes, $dimensionValues, $actor): Transaction {
             $transaction->fill(Arr::only($changes, self::UPDATABLE))->save();

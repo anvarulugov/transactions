@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { ReceiptImport } from '../receipts/ReceiptImport'
 import { Menu } from 'lucide-react'
 import type { ApiClient } from '../api/client'
 import type { Bootstrap } from '../api/types'
@@ -6,6 +7,7 @@ import { strings } from '../strings'
 import { formatMoneyString } from '../ui/Money'
 import { Toast } from '../ui/Toast'
 import { AmountKeypad } from './AmountKeypad'
+import { QuantityField } from './QuantityField'
 import { amountInputValue, groupDigitsForDisplay } from './amountInputFormat'
 import { CategoryChips } from './CategoryChips'
 import { DetailsSheet } from './DetailsSheet'
@@ -168,6 +170,8 @@ export function EntryScreen({ bootstrap, client, onSaveStateChange }: EntryScree
         </div>
       </div>
 
+      {form.values.type === 'expense' ? <div style={{ padding: '14px 22px 0' }}><label className="flex items-center gap-2"><input type="checkbox" checked={form.values.isMarketPurchase} onChange={(event) => form.setMarketPurchase(event.target.checked)} />{strings.entry.marketPurchase}</label></div> : null}
+      {form.values.type === 'expense' ? <ReceiptImport client={client} bootstrap={bootstrap} occurredOn={form.values.occurredOn} dimensionValues={form.values.dimensionValues} /> : null}
       <CategoryChips
         categories={form.categories}
         type={form.values.type}
@@ -175,6 +179,10 @@ export function EntryScreen({ bootstrap, client, onSaveStateChange }: EntryScree
         defaultId={bootstrap.defaults.category_id}
         onSelect={form.setCategory}
       />
+
+      <div style={{ padding: '0 22px 12px' }}>
+        <QuantityField value={form.values.quantityInput} unit={form.values.quantityUnit} onChange={form.setQuantity} onUnitChange={form.setQuantityUnit} />
+      </div>
 
       <AmountKeypad value={form.values.amountInput} onChange={form.setAmount} />
 

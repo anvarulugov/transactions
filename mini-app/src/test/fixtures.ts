@@ -17,6 +17,9 @@ export function clientStub(overrides: Partial<ApiClient> = {}): ApiClient {
   return {
     setToken: vi.fn(),
     clearToken: vi.fn(),
+    uploadReceipt: vi.fn(),
+    confirmReceipt: vi.fn(),
+    receiptImage: vi.fn(),
     authenticate: vi.fn().mockResolvedValue({ token: 'test-token', user: staffUser }),
     bootstrap: vi.fn().mockResolvedValue(bootstrapFixture),
     listTransactions: vi.fn().mockResolvedValue({ data: [], meta: { next_cursor: null } }),

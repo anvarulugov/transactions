@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { parseAmount } from './parseAmount'
+import { parseQuantity } from './parseQuantity'
 import { valuesFromDefaults, type EntryValues } from './entryDefaults'
 import {
   isStaleReference,
@@ -19,6 +20,9 @@ export type EntryForm = {
   categories: Bootstrap['categories']
   dimensions: Bootstrap['dimensions']
   currencies: Bootstrap['currencies']
+  setMarketPurchase: (value: boolean) => void
+  setQuantity: (input: string) => void
+  setQuantityUnit: (unit: EntryValues['quantityUnit']) => void
   setAmount: (input: string) => void
   setCategory: (id: number) => void
   setDimension: (dimensionId: number, valueId: number) => void
@@ -52,7 +56,9 @@ export function useEntryForm(bootstrap: Bootstrap, client: ApiClient): EntryForm
   const missingRequired = reference.dimensions
     .filter((dimension) => dimension.is_required && values.dimensionValues[dimension.id] === undefined)
     .map((dimension) => dimension.name)
-  const canSave = parsedAmount !== null && missingRequired.length === 0
+  const parsedQuantity = parseQuantity(values.quantityInput)
+  const quantityValid = values.quantityInput.trim() === '' || parsedQuantity !== null
+  const canSave = parsedAmount !== null && missingRequired.length === 0 && quantityValid
   const amountInvalid = values.amountInput !== '' && parsedAmount === null
 
   // Every setter is the same shape — patch one or more fields onto the current values —
@@ -61,6 +67,9 @@ export function useEntryForm(bootstrap: Bootstrap, client: ApiClient): EntryForm
     setValues((current) => ({ ...current, ...next }))
   }
 
+  const setQuantityUnit = (unit: EntryValues['quantityUnit']): void => patch({ quantityUnit: unit })
+  const setMarketPurchase = (value: boolean): void => patch({ isMarketPurchase: value })
+  const setQuantity = (input: string): void => patch({ quantityInput: input })
   const setAmount = (input: string): void => patch({ amountInput: input })
   const setCategory = (id: number): void => patch({ categoryId: id })
   const setType = (type: 'income' | 'expense'): void => patch({ type })
@@ -121,6 +130,8 @@ export function useEntryForm(bootstrap: Bootstrap, client: ApiClient): EntryForm
       occurred_on: values.occurredOn,
       category_id: values.categoryId ?? undefined,
       note: values.note === '' ? null : values.note,
+      ...(parsedQuantity !== null ? { quantity: parsedQuantity, quantity_unit: values.quantityUnit } : {}),
+      ...(values.isMarketPurchase && values.type === 'expense' ? { is_market_purchase: true } : {}),
       dimension_values: values.dimensionValues,
     }
 
@@ -149,6 +160,9 @@ export function useEntryForm(bootstrap: Bootstrap, client: ApiClient): EntryForm
     categories: reference.categories,
     dimensions: reference.dimensions,
     currencies: reference.currencies,
+    setMarketPurchase,
+    setQuantity,
+    setQuantityUnit,
     setAmount,
     setCategory,
     setDimension,

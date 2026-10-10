@@ -1,4 +1,6 @@
 import type {
+  ReceiptDraft,
+  ReceiptConfirmation,
   ApiTransaction,
   ApiTransactionRevision,
   AuthExchange,
@@ -20,6 +22,9 @@ export { ApiError } from './errors'
 export type ApiClient = {
   setToken(token: string | null): void
   clearToken(): void
+  uploadReceipt(image: File): Promise<{ data: ReceiptDraft }>
+  confirmReceipt(id: number, body: ReceiptConfirmation): Promise<{ data: ApiTransaction[]; receipt_id: number }>
+  receiptImage(id: number): Promise<Blob>
   authenticate(initData: string): Promise<AuthExchange>
   bootstrap(): Promise<Bootstrap>
   listTransactions(params: TransactionListParams): Promise<CursorPage<ApiTransaction>>
@@ -36,6 +41,7 @@ type FetchImpl = typeof fetch
 type RequestOptions = {
   /** False for the auth exchange itself, so a bad login cannot retry-loop into itself. */
   allowRetry?: boolean
+  blob?: boolean
 }
 
 export function createClient(baseUrl: string, fetchImpl: FetchImpl = fetch): ApiClient {
@@ -67,6 +73,8 @@ export function createClient(baseUrl: string, fetchImpl: FetchImpl = fetch): Api
       await reauthenticate(lastInitData)
       return request<T>(path, init, { ...options, allowRetry: false })
     }
+
+    if (response.ok && options.blob) return await response.blob() as T
 
     const body = await readBody(response)
 
@@ -110,6 +118,13 @@ export function createClient(baseUrl: string, fetchImpl: FetchImpl = fetch): Api
     setToken,
     clearToken,
     authenticate: performAuth,
+    uploadReceipt: (image) => {
+      const data = new FormData()
+      data.append('image', image)
+      return request<{ data: ReceiptDraft }>('/api/receipts', { method: 'POST', body: data })
+    },
+    confirmReceipt: (id, body) => request<{ data: ApiTransaction[]; receipt_id: number }>(`/api/receipts/${id}/confirm`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }),
+    receiptImage: (id) => request<Blob>(`/api/receipts/${id}/image`, {}, { blob: true }),
 
     bootstrap: () => request<Bootstrap>('/api/bootstrap'),
 

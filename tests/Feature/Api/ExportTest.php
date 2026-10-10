@@ -154,7 +154,7 @@ it('adds one column per active dimension in sort then name order and blanks a mi
 
     $rows = parseCsv($this->get('/api/exports/transactions')->assertOk()->streamedContent());
 
-    expect($rows[0])->toBe(['date', 'type', 'amount', 'currency', 'category', 'staff', 'department', 'note', 'project', 'branch']);
+    expect($rows[0])->toBe(['date', 'type', 'amount', 'currency', 'category', 'staff', 'department', 'note', 'project', 'branch', 'quantity_kg', 'quantity', 'quantity_unit', 'is_market_purchase', 'receipt_id']);
 
     $withBranchRow = collect($rows)->firstWhere(fn (array $row) => ($row[8] ?? null) === '' && ($row[9] ?? null) === 'Tashkent');
     $withoutBranchRow = collect($rows)->firstWhere(fn (array $row) => ($row[8] ?? null) === '' && ($row[9] ?? null) === '');

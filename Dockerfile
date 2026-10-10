@@ -1,6 +1,6 @@
 FROM php:8.4-cli-alpine
 
-RUN apk add --no-cache postgresql-dev icu-dev libzip-dev git curl \
+RUN apk add --no-cache postgresql-dev icu-dev libzip-dev git curl tesseract-ocr tesseract-ocr-data-eng tesseract-ocr-data-rus \
     && docker-php-ext-install pdo_pgsql intl zip bcmath opcache
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer

@@ -17,6 +17,18 @@ export const strings = {
     reports: 'Hisobotlar',
     history: 'Tarix',
   },
+  receipt: {
+    title: 'Xarid chekidan kiritish', camera: 'Chekni suratga olish', upload: 'Chek rasmini yuklash', reading: 'Chek o‘qilmoqda...',
+    review: 'Ro‘yxat to‘g‘rimi? Rasm bilan solishtirib, kerak bo‘lsa tuzating.',
+    photo: 'Chek rasmi', itemName: 'Tovar nomi', amount: 'Summa', total: 'Chek jami', sum: 'Tovarlar jami',
+    add: 'Tovar qo‘shish', remove: 'Qatorni olib tashlash', category: 'Turkumni tanlang', unit: 'Birlikni tanlang',
+    confirm: 'Ha, xarajatlarga yozilsin', mismatch: 'Tovarlar jami chek summasiga mos emas.',
+    required: 'Har bir tovar nomi, turkumi, miqdori, birligi va summasini tekshiring.',
+    saved: 'Bozorlik xarajatlari saqlandi.', alreadySaved: 'Bu chek allaqachon xarajatlarga yozilgan.',
+    failed: 'Chekni o‘qib bo‘lmadi. Tiniqroq rasmni yuklang.', saving: 'Saqlanmoqda...',
+    raw: 'Rasmdan o‘qilgan matn', view: 'Xarid chekini ko‘rish', failedImage: 'Chek rasmini ochib bo‘lmadi.',
+    unavailable: 'Ayrim qatorlar aniqlanmagan bo‘lishi mumkin. Rasmni tekshiring.',
+  },
   common: {
     retry: 'Qaytadan urinish',
     save: 'Saqlash',
@@ -27,9 +39,14 @@ export const strings = {
     close: 'Yopish',
   },
   entry: {
+    marketPurchase: 'Bozorlik',
     // The entry screen's gradient-header title, above the amount field.
     newEntry: 'Yangi yozuv',
     amount: 'Summa',
+    quantity: 'Miqdor',
+    quantityUnit: 'Miqdor birligi',
+    quantityPlaceholder: 'Masalan: 2,5',
+    invalidQuantity: 'Noldan katta miqdor kiriting. Masalan: 2,5 (3 tagacha kasr raqami).',
     category: 'Turkum',
     details: 'Batafsil',
     type: 'Turi',

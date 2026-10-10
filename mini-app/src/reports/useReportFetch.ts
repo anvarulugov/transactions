@@ -35,6 +35,12 @@ export function useReportFetch<T>(fetchReport: () => Promise<T>, deps: Dependenc
   const [attempt, setAttempt] = useState(0)
 
   useEffect(() => {
+    const refresh = () => setAttempt((value) => value + 1)
+    window.addEventListener('transactions-updated', refresh)
+    return () => window.removeEventListener('transactions-updated', refresh)
+  }, [])
+
+  useEffect(() => {
     let ignore = false
     setFailed(false)
     setRateLimited(false)

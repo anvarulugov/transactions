@@ -79,6 +79,12 @@ export function useTransactions(client: ListTransactions, filters: HistoryFilter
   const generationRef = useRef(0)
   const loadingMoreGenerationRef = useRef<number | null>(null)
 
+  useEffect(() => {
+    const refresh = () => setReloadToken((value) => value + 1)
+    window.addEventListener('transactions-updated', refresh)
+    return () => window.removeEventListener('transactions-updated', refresh)
+  }, [])
+
   const dimensionKey = JSON.stringify(filters.dimension ?? {})
 
   useEffect(() => {

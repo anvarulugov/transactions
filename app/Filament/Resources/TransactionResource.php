@@ -92,6 +92,12 @@ class TransactionResource extends Resource
             TextEntry::make('amount_minor')
                 ->label('Amount')
                 ->formatStateUsing(fn (Transaction $record): string => Money::toDecimal($record->amount_minor, $record->currency).' '.$record->currency),
+            TextEntry::make('is_market_purchase')->label('Bozorlik')->formatStateUsing(fn (bool $state): string => $state ? 'Ha' : 'Yo‘q'),
+            TextEntry::make('receipt_id')->label('Xarid cheki')->placeholder('—')->url(fn (Transaction $record): ?string => $record->receipt_id ? '/admin/receipts/'.$record->receipt_id.'/image' : null)->openUrlInNewTab(),
+            TextEntry::make('quantity')
+                ->label('Miqdor')
+                ->formatStateUsing(fn (Transaction $record): ?string => $record->quantity !== null ? rtrim(rtrim($record->quantity, '0'), '.').' '.$record->quantity_unit : null)
+                ->placeholder('—'),
             TextEntry::make('note')
                 ->placeholder('—'),
         ]);
@@ -114,6 +120,13 @@ class TransactionResource extends Resource
                 TextColumn::make('amount_minor')
                     ->label('Amount')
                     ->formatStateUsing(fn (Transaction $record): string => Money::toDecimal($record->amount_minor, $record->currency).' '.$record->currency)
+                    ->sortable(),
+                TextColumn::make('is_market_purchase')->label('Bozorlik')->formatStateUsing(fn (bool $state): string => $state ? 'Ha' : '—'),
+                TextColumn::make('receipt_id')->label('Chek')->placeholder('—')->url(fn (Transaction $record): ?string => $record->receipt_id ? '/admin/receipts/'.$record->receipt_id.'/image' : null)->openUrlInNewTab(),
+                TextColumn::make('quantity')
+                    ->label('Miqdor')
+                    ->formatStateUsing(fn (Transaction $record): ?string => $record->quantity !== null ? rtrim(rtrim($record->quantity, '0'), '.').' '.$record->quantity_unit : null)
+                    ->placeholder('—')
                     ->sortable(),
                 TextColumn::make('note')
                     ->limit(40)

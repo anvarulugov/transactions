@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\BootstrapController;
 use App\Http\Controllers\Api\HealthController;
+use App\Http\Controllers\Api\ReceiptController;
 use App\Http\Controllers\Api\ReportsController;
 use App\Http\Controllers\Api\TelegramAuthController;
 use App\Http\Controllers\Api\TransactionExportController;
@@ -23,6 +24,10 @@ Route::middleware(['auth:sanctum', 'active', 'throttle:api'])->group(function ()
     Route::get('me', fn (Request $request) => UserResource::make(
         $request->user()->loadMissing(['department', 'managedDepartments'])
     ))->name('me');
+
+    Route::post('receipts', [ReceiptController::class, 'store'])->middleware('throttle:5,1');
+    Route::get('receipts/{receipt}/image', [ReceiptController::class, 'image'])->whereNumber('receipt');
+    Route::post('receipts/{receipt}/confirm', [ReceiptController::class, 'confirm'])->whereNumber('receipt');
 
     Route::get('bootstrap', BootstrapController::class)->name('bootstrap');
 

@@ -25,6 +25,11 @@ class Transaction extends Model
         'occurred_on',
         'category_id',
         'note',
+        'quantity_kg',
+        'quantity',
+        'quantity_unit',
+        'is_market_purchase',
+        'receipt_id',
         'created_by',
         'idempotency_key',
     ];
@@ -35,6 +40,9 @@ class Transaction extends Model
             'type' => TransactionType::class,
             'occurred_on' => 'date',
             'amount_minor' => 'integer',
+            'quantity_kg' => 'decimal:3',
+            'quantity' => 'decimal:3',
+            'is_market_purchase' => 'boolean',
         ];
     }
 

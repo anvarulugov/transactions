@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\Api\ReceiptController;
 use App\Http\Controllers\TelegramWebhookController;
 use App\Http\Middleware\VerifyTelegramWebhook;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/admin/receipts/{receipt}/image', [ReceiptController::class, 'image'])->middleware('auth')->whereNumber('receipt');
 
 Route::get('/', function () {
     return view('welcome');

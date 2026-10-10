@@ -22,6 +22,11 @@ class TransactionResource extends JsonResource
             'currency' => $this->currency,
             'occurred_on' => $this->occurred_on->toDateString(),
             'note' => $this->note,
+            'is_market_purchase' => $this->is_market_purchase,
+            'receipt_id' => $this->receipt_id,
+            'quantity_kg' => $this->quantity_kg,
+            'quantity' => $this->quantity ?? $this->quantity_kg,
+            'quantity_unit' => $this->quantity_unit ?? ($this->quantity_kg !== null ? 'kg' : null),
             'category' => [
                 'id' => $this->category->id,
                 'name' => $this->category->name,

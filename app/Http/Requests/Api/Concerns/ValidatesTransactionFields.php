@@ -23,6 +23,25 @@ trait ValidatesTransactionFields
         return $this->transactionFieldValidator()->rules($presence);
     }
 
+    /** @return array<string, string> */
+    public function messages(): array
+    {
+        return [
+            'quantity.string' => __('errors.quantity_invalid'),
+            'quantity.regex' => __('errors.quantity_invalid'),
+            'quantity.not_regex' => __('errors.quantity_invalid'),
+            'quantity.required_with' => __('errors.quantity_invalid'),
+            'quantity.prohibits' => __('errors.quantity_invalid'),
+            'quantity_unit.required_with' => __('errors.quantity_unit_invalid'),
+            'quantity_unit.in' => __('errors.quantity_unit_invalid'),
+            'quantity_unit.string' => __('errors.quantity_unit_invalid'),
+            'quantity_unit.prohibits' => __('errors.quantity_unit_invalid'),
+            'quantity_kg.string' => __('errors.quantity_kg_invalid'),
+            'quantity_kg.regex' => __('errors.quantity_kg_invalid'),
+            'quantity_kg.not_regex' => __('errors.quantity_kg_invalid'),
+        ];
+    }
+
     /** @return array<int, int> */
     public function dimensionValues(): array
     {

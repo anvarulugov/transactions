@@ -1,7 +1,9 @@
+import { ReceiptViewer } from '../receipts/ReceiptViewer'
 import { useState } from 'react'
 import type { ApiClient } from '../api/client'
 import type { ApiTransaction, ApiUser, Bootstrap } from '../api/types'
 import { parseAmount } from '../entry/parseAmount'
+import { parseQuantity } from '../entry/parseQuantity'
 import { strings } from '../strings'
 import { TransactionFields } from './TransactionFields'
 import { TransactionHeader } from './TransactionHeader'
@@ -14,7 +16,7 @@ export type TransactionSheetProps = {
   transaction: ApiTransaction
   bootstrap: Bootstrap
   user: ApiUser
-  client: Pick<ApiClient, 'updateTransaction' | 'deleteTransaction' | 'revisions'>
+  client: Pick<ApiClient, 'updateTransaction' | 'deleteTransaction' | 'revisions'> & Partial<Pick<ApiClient, 'receiptImage'>>
   onClose: () => void
   onSaved: (updated: ApiTransaction) => void
   onDeleted: (id: number) => void
@@ -58,7 +60,8 @@ export function TransactionSheet({
   // currency with nothing typed in the amount field yet is not a state `diffValues` can
   // turn into a valid request, so `save` stays disabled until one arrives.
   const currencyNeedsAmount = values.currency !== original.currency && parsedAmount === null
-  const canSave = !amountInvalid && !currencyNeedsAmount
+  const quantityInvalid = values.quantityInput.trim() !== '' && parseQuantity(values.quantityInput) === null
+  const canSave = !amountInvalid && !currencyNeedsAmount && !quantityInvalid
 
   function patch(next: Partial<TransactionEditValues>): void {
     setValues((current) => ({ ...current, ...next }))
@@ -119,6 +122,8 @@ export function TransactionSheet({
         />
 
         <TransactionHeader transaction={transaction} exponents={bootstrap.currencies} revisionState={revisionState} />
+
+        {transaction.receipt_id && client.receiptImage ? <ReceiptViewer id={transaction.receipt_id} load={client.receiptImage} /> : null}
 
         {canManage ? (
           <TransactionFields values={values} bootstrap={bootstrap} onChange={patch} amountInvalid={amountInvalid} />
